@@ -1,0 +1,7 @@
+/node_modules/
+/public/
+/src/assets/
+/src/store/
+/src/utils/
+.vscode
+.idea
