@@ -3,8 +3,8 @@ import { RouteView, BasicLayout } from '@/layouts'
 /**
  * @desc 权限路由
  * @desc 走导航的路由都在根路由/里，走BasicLayout基础布局
- * @desc 不走导航的和根路由/放在同级，加上hidden:true
- * @desc 不需登录的放在基础路由里，并放在权限控制的白名单里才不会走权限验证
+ * @desc 不走导航的和根路由/放在同级或者放在根路由里加上hidden:true
+ * @desc 不需登录的放在基础路由constantRouterMap里，并放在权限控制的白名单里才不会走权限验证
  * */
 
 const Empower = () => import(/* webpackChunkName: 'empower' */ '@/views/empower')
@@ -12,7 +12,9 @@ const Exception = () => import(/* webpackChunkName: 'exception' */ '@/views/exce
 
 const Home = () => import(/* webpackChunkName: 'home' */ '@/views/home')
 const Unit = () => import(/* webpackChunkName: 'unit' */ '@/views/unit')
+const UnitDetail = () => import(/* webpackChunkName: 'unit-detail' */ '@/views/unit-detail')
 const Team = () => import(/* webpackChunkName: 'team' */ '@/views/team')
+const User = () => import(/* webpackChunkName: 'user' */ '@/views/user')
 const Setting = () => import(/* webpackChunkName: 'setting' */ '@/views/setting')
 
 export const asyncRouterMap = [
@@ -46,6 +48,14 @@ export const asyncRouterMap = [
             meta: { title: '单位管理', icon: 'form', keepAlive: true, permission: 'unit' },
             hidden: false
           },
+          // 单位详情
+          {
+            path: '/organize/unit/:id',
+            name: 'UnitDetail',
+            component: UnitDetail,
+            meta: { title: '单位详情', icon: 'form', keepAlive: true, permission: 'unit_detail' },
+            hidden: true
+          },
           // 团队管理
           {
             path: '/organize/team',
@@ -65,6 +75,13 @@ export const asyncRouterMap = [
         hidden: false
       }
     ]
+  },
+  // 用户信息
+  {
+    path: '/user',
+    name: 'User',
+    component: User,
+    meta: { keepAlive: true, permission: 'user' }
   }
 ]
 

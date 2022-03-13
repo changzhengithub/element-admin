@@ -13,7 +13,7 @@ export default {
   },
 
   created() {
-    this.getTeams()
+    // this.getTeams()
   },
   methods: {
     getTeams() {

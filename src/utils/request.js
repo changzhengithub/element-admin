@@ -1,7 +1,7 @@
 import axios from 'axios'
 // import store from '@/store'
 import storage from 'store'
-import { ACCESS_TOKEN } from '@/store/mutation-types'
+import { ACCESS_TOKEN, USER_INFO } from '@/store/mutation-types'
 import { Notification } from 'element-ui'
 
 // 创建 axios 实例
@@ -40,7 +40,7 @@ const errorHandler = (error) => {
       })
       if (token) {
         storage.remove(ACCESS_TOKEN)
-        storage.remove('userInfo')
+        storage.remove(USER_INFO)
       }
       window.location.reload()
     }

@@ -38,14 +38,14 @@ router.beforeEach((to, from, next) => {
       NProgress.done()
     } else {
       // 判断是否有页面权限
-      if (!store.state.role) {
+      if (!store.state.empower.permission.length) {
         // 没有调用登录接口，获取用户权限
         store
           .dispatch('GetInfo')
           .then((permissionList) => {
             // 根据用户权限过滤路由
             store.dispatch('FilterRoutes', { permissionList }).then(() => {
-              const { routerList } = store.state
+              const { routerList } = store.state.empower
               // 动态添加可访问路由表
               routerList.forEach(item => {
                 router.addRoute(item)

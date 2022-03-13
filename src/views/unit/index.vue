@@ -1,6 +1,6 @@
 <template>
   <div class="about">
-    <h1>设置</h1>
+    <h1>单位管理</h1>
   </div>
 </template>
 <script>
@@ -13,7 +13,7 @@ export default {
   },
 
   created() {
-    this.getTeams()
+    // this.getTeams()
   },
   methods: {
     getTeams() {

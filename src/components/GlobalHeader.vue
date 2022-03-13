@@ -1,48 +1,34 @@
 <template>
   <div class="global-header">
     <div class="header-left">
-      <a-button shape="round" @click="toggleCollapse">
-        <icon-menu-unfold v-if="collapsed" />
-        <icon-menu-fold v-else />
-      </a-button>
-      <!-- <a-breadcrumb :style="{ marginLeft: '20px' }">
-        <a-breadcrumb-item>Home</a-breadcrumb-item>
-        <a-breadcrumb-item>List</a-breadcrumb-item>
-        <a-breadcrumb-item>App</a-breadcrumb-item>
-      </a-breadcrumb> -->
+      <el-button size="small" @click="toggleCollapse">
+        <i class="el-icon-s-fold" v-if="collapsed"></i>
+        <i class="el-icon-s-unfold" v-else></i>
+      </el-button>
     </div>
     <div class="header-right">
-      <a-dropdown trigger="hover" position="br">
+      <el-dropdown>
         <div class="right-info">
-          <a-avatar :size="36">
-            <img :src="userInfo.avatar" alt="头像" />
-          </a-avatar>
-          <div class="info-detail">
-            <div class="detail-name">{{ userInfo.name }}</div>
-            <div class="detail-unit">{{ userInfo.organization_name }}</div>
-          </div>
+          <el-avatar :size="36" :src="userInfo.avatar"></el-avatar>
+          <div class="info-name"><span>{{ userInfo.name }}</span></div>
         </div>
-        <template #content>
-          <a-doption v-if="userInfo.is_admin != 1" style="width: 110px" @click="openPersonalInfo">
-            <template #icon>
-              <icon-settings />
-            </template>
-            个人信息
-          </a-doption>
-          <a-doption @click="logoutSubmit">
-            <template #icon>
-              <icon-export />
-            </template>
-            退出登录
-          </a-doption>
-        </template>
-      </a-dropdown>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item v-if="userInfo.is_admin != 1" @click="openPersonalInfo">个人信息</el-dropdown-item>
+          <el-dropdown-item @click="logoutSubmit">退出登录</el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
     </div>
-
   </div>
 </template>
 
 <script>
+/**
+ * @description 头部右侧头像
+ * @author changz
+ * */
+import { mapActions, mapState } from 'vuex'
+import storage from 'store'
+import { USER_INFO } from '@/store/mutation-types'
 
 export default {
   name: 'GlobalHeader',
@@ -56,38 +42,44 @@ export default {
       }
     }
   },
+  computed: {
+    ...mapState([])
+  },
   created() {
-
+    this.userInfo = storage.get(USER_INFO)
   },
   methods: {
+    ...mapActions(['Logout']),
+
     openPersonalInfo() {
-      this.memberDetail.visible = true
-      this.memberDetail.id = this.userInfo.id
-    },
-    closeDialog() {
-      this.memberDetail.visible = false
+      this.$router.push({
+        name: 'User'
+      })
     },
     // 折叠展开导航栏
     toggleCollapse() {
       this.collapsed = !this.collapsed
-      this.emit('COLLAPSE_EVENT')
+      this.$emit('COLLAPSE_EVENT')
     },
     // 退出登录
     logoutSubmit() {
-      global.$modal.warning({
-        title: '提示',
-        content: '确定要退出登录？',
-        closable: true,
-        onOk: () => {
-          // store
-          //   .dispatch('Logout')
-          //   .then(() => {
-          //     window.location.href = '/'
-          //   })
-          //   .catch(() => {
-          //     window.location.href = '/'
-          //   })
-        }
+      console.log(111)
+      this.$confirm('确定要退出登录？?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.Logout()
+          .then(() => {
+            window.location.href = '/'
+          })
+          .catch((err) => {
+            this.$notify.error({
+              title: '错误',
+              message: err.message
+            })
+            window.location.href = '/'
+          })
       })
     }
   }
@@ -95,38 +87,27 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-// .global-header {
-//   .flex_vertical_center_horizontal_between();
-//   width: 100%;
-//   height: 100%;
-//   padding: 0 24px;
+.global-header {
+  @include flex_vertical_center_horizontal_between();
+  width: 100%;
+  height: 100%;
 
-//   .header-right {
-//     height: 100%;
-//     .right-info {
-//       height: 100%;
-//       .flex_vertical_center();
-
-//       .info-detail {
-//         padding-left: 10px;
-//         text-align: right;
-//         cursor: pointer;
-//         .detail-name {
-//           height: 20px;
-//           line-height: 20px;
-//           margin-bottom: 2px;
-//           font-size: 14px;
-//           color: #333;
-//         }
-//         .detail-unit {
-//           height: 16px;
-//           line-height: 16px;
-//           font-size: 12px;
-//           color: #999;
-//           // border: 1px solid #165DFF;
-//         }
-//       }
-//     }
-//   }
-// }
+  .header-right {
+    @include flex_vertical_center();
+    height: 100%;
+    .right-info {
+      @include flex_vertical_center();
+      .info-name {
+        padding-left: 10px;
+        text-align: right;
+        cursor: pointer;
+        height: 20px;
+        line-height: 20px;
+        margin-bottom: 2px;
+        font-size: 14px;
+        color: #333;
+      }
+    }
+  }
+}
 </style>

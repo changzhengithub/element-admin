@@ -3,47 +3,80 @@
     <div class="empower-wrap">
       <div class="wrap-form">
         <el-form :model="formData" ref="empower" label-width="80px">
-          <el-form-item
-            prop="userName"
-            label="用户名"
-            :rules="{ required: true, message: '请输入用户名', trigger: 'blur' }"
-          >
-            <el-input v-model="formData.userName"></el-input>
+          <el-form-item prop="username" label="用户名" :rules="{ required: true, message: '请输入用户名', trigger: 'blur' }">
+            <el-input v-model="formData.username"></el-input>
           </el-form-item>
-          <el-form-item
-            label="密码"
-            prop="password"
-            :rules="{ required: true, message: '请输入密码', trigger: 'blur' }"
-          >
+          <el-form-item label="密码" prop="password" :rules="{ required: true, message: '请输入密码', trigger: 'blur' }">
             <el-input v-model="formData.password"></el-input>
           </el-form-item>
 
           <el-form-item>
-            <el-button type="primary" @click="submitForm">提交</el-button>
+            <el-button type="primary" :loading="submitLoad" @click="submitForm">提交</el-button>
           </el-form-item>
         </el-form>
       </div>
-
     </div>
   </div>
 </template>
 <script>
+/**
+ * @description 登录页面
+ * @author changz
+ * */
+import { mapActions } from 'vuex'
+
 export default {
   name: 'Empower',
   data() {
     return {
+      submitLoad: false,
       formData: {
-        password: '',
-        userName: ''
+        password: 'admin',
+        username: 'admin'
       }
     }
   },
   created() {},
   methods: {
+    ...mapActions(['Login']),
+
     submitForm() {
       this.$refs.empower.validate(valid => {
         if (valid) {
-          alert('submit!')
+          const { username, password } = this.formData
+          const params = {
+            username,
+            password
+          }
+          this.submitLoad = true
+          this.Login(params)
+            .then(res => {
+              this.submitLoad = false
+              if (res.code !== 200) {
+                this.$notify.error({
+                  title: '错误',
+                  message: res.message
+                })
+              }
+              const data = res.data
+              console.log(data)
+              this.$router.push({ path: '/' })
+              // 延迟 1 秒显示欢迎信息
+              setTimeout(() => {
+                this.$notify.success({
+                  title: '欢迎',
+                  message: '欢迎回来'
+                })
+              }, 1000)
+            })
+            .catch(err => {
+              console.log(err)
+              this.submitLoad = false
+              this.$notify.error({
+                title: '错误',
+                message: '这是一条错误的提示消息'
+              })
+            })
         } else {
           console.log('error submit!!')
           return false
@@ -72,7 +105,7 @@ export default {
       padding: 50px 30px;
       background-color: #fff;
       border-radius: 5px;
-      box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1)
+      box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
     }
   }
 }

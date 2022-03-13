@@ -5,7 +5,7 @@
 
 import storage from 'store'
 // eslint-disable-next-line
-import { infoApi, logoutApi } from '@/api/empower'
+import { loginApi, infoApi, logoutApi } from '@/api/empower'
 import { asyncRouterMap } from '@/router/router.config'
 import { ACCESS_TOKEN, USER_INFO } from '@/store/mutation-types'
 
@@ -25,22 +25,41 @@ const empower = {
     }
   },
   actions: {
+    // 登录
+    Login ({ commit }, userInfo) {
+      return new Promise((resolve, reject) => {
+        loginApi(userInfo).then(res => {
+          const { token, userInfo } = res.data
+          storage.set(ACCESS_TOKEN, token, 7 * 24 * 60 * 60 * 1000)
+          storage.set(USER_INFO, userInfo)
+          resolve(res)
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
+
     // 获取用户信息
     GetInfo({ commit }, params) {
       return new Promise((resolve, reject) => {
         infoApi(params).then(res => {
+          console.log(res)
           const data = res.data
           // 缓存用户信息
           storage.set(USER_INFO, data)
           // 获取用户权限列表，可以是后端直接返回权限列表，也可以根据返回角色类型设置权限列表
           const { role } = data
           const roleMenu = {
-            '1': ['', '', ''], // 管理员
-            '2': ['', '', ''] // 用户
+            '1': ['home', 'org', 'unit', 'team', 'setting', 'user'], // 管理员
+            '2': ['home', 'org', 'unit', 'team', 'user'] // 用户
           }
           const permissionList = roleMenu[role]
-          // 保存权限列表
-          commit('setPermission', permissionList)
+          if (permissionList.length) {
+            // 保存权限列表
+            commit('setPermission', permissionList)
+          } else {
+            reject(new Error('角色必须是非空数组!'))
+          }
           resolve(permissionList)
         }).catch(error => {
           reject(error)
@@ -51,11 +70,11 @@ const empower = {
     // 根据role过滤对应路由
     FilterRoutes({ commit }, res) {
       const { permissionList } = res;
-      return new Promise((resolve, reject) => {
+      return new Promise(resolve => {
         const routerList = filterAsyncRouter(asyncRouterMap, permissionList)
         console.log(routerList);
         routerList.push({
-          path: '/:catchAll(.*)',
+          path: '*',
           redirect: '/exception',
           hidden: true
         })

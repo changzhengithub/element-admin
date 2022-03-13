@@ -1,6 +1,6 @@
 <template>
   <div class="about">
-    <h1>首页</h1>
+    <h1>单位详情</h1>
   </div>
 </template>
 <script>
@@ -27,9 +27,4 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.about {
-  width: 100%;
-  height: 100%;
-  background-color: #fff;
-}
 </style>

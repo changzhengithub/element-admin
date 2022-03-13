@@ -19,4 +19,15 @@ module.exports = defineConfig({
     //     }
     // }
   },
+
+  // 全局配置sass
+  css: {
+    loaderOptions: {
+      sass: {
+        // @是src的别名
+        additionalData: `@import "~@/assets/scss/main.scss";`
+      }
+    }
+  }
+
 })
